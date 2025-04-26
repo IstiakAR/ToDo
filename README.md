@@ -1,20 +1,25 @@
 
 # Webpack Template
 
-### Install all the dependencies
+### Clone the repo
+```
+git clone git@github.com:IstiakAR/Webpack-Template.git
+```
+
+### CD into the directory and Install all the dependencies
 ```
 npm install
 ```
 ### Run the project
 ```
-npm webpack serve
+npx webpack serve
 ```
 It will be running on http://localhost:8080/
 
 ### To start a github page
 
 ```
-npm webpack --mode production
+npx webpack --mode production
 ```
 
 ```
