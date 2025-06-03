@@ -36,7 +36,10 @@ newNoteDialog.innerHTML = `
     <h2>Create New Note</h2>
     <input type="text" id="noteTitle" placeholder="Note Title">
     <textarea id="noteText" placeholder="Note Content"></textarea>
-    <input type="datetime-local" id="datetime" name="datetime">
+    <div class="dateTimeInputs">
+        <input type="date" id="noteDate" name="noteDate" placeholder="Due Date">
+        <input type="time" id="noteTime" name="noteTime" placeholder="Due Time">
+    </div>
     <div class="newNoteButtons">
         <button id="createButton">Create</button>
         <button id="cancelButton" onclick="document.querySelector('.newNoteDialog').close()">Cancel</button>
@@ -78,12 +81,14 @@ newWorkspaceDialog.querySelector('#createButton').addEventListener('click', () =
 newNoteDialog.querySelector('#createButton').addEventListener('click', () => {
     const title = document.getElementById('noteTitle').value.trim();
     const text = document.getElementById('noteText').value.trim();
-    const dateTime = document.getElementById('datetime').value;
-    if (dateTime && (title || text)) {
-        addNode(title, text, dateTime);
-    } else {
-        alert("Please fill in all fields.");
+    const date = document.getElementById('noteDate').value;
+    const time = document.getElementById('noteTime').value;
+    
+    if (!title && !text) {
+        alert("Please enter either a title or note content.");
+        return;
     }
+    addNode(title, text, date, time);
 });
 
 
@@ -116,16 +121,14 @@ const addWorkspace = (name) => {
     saveWorkspaces(workspaces);
 }
 
-const addNode = (title, text, dateTime) => {
-    let date = '';
-    let time = '';
-    if(dateTime!='')  [date, time] = dateTime.split('T');
+const addNode = (title, text, date, time) => {
     const note = new Note(title, text, 'Created', date, time);
     workspaces.get(currentWorkspace).push(note);
     showWorkspace(currentWorkspace);
     document.getElementById('noteTitle').value = '';
     document.getElementById('noteText').value = '';
-    document.getElementById('datetime').value = '';
+    document.getElementById('noteDate').value = '';
+    document.getElementById('noteTime').value = '';
     newNoteDialog.close();
     saveWorkspaces(workspaces);
 }
@@ -187,17 +190,42 @@ const showWorkspace = (name=currentWorkspace) => {
 
     showWorkspaceButtons();
     mainField.innerHTML = '';
-    for(const note of workspaces.get(name).reverse()) {
+    for(const note of workspaces.get(name)) {
         const pageBox = document.createElement("div");
         pageBox.className = "pageBox";
         const page = document.createElement("div");
         page.className = "note";
         
-        const [hours, minutes] = note.time.split(':');
-        const hour = parseInt(hours, 10);
-        const ampm = hour >= 12 ? 'PM' : 'AM';
-        const formattedHour = hour % 12 || 12;
+        let dueDateContent = '';
+        let dueTimeContent = '';
+        
+        if (note.date && note.time) {
+            const [hours, minutes] = note.time.split(':');
+            const hour = parseInt(hours, 10);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const formattedHour = hour % 12 || 12;
+            
+            dueDateContent = `<span class="noteDate">${note.date}</span>`;
+            dueTimeContent = `<span class="noteTime">${formattedHour}:${minutes} ${ampm}</span>`;
+        } else if (note.date && !note.time) {
+            dueDateContent = `<span class="noteDate">${note.date}</span>`;
+            dueTimeContent = `<span class="noteTime" style="color: #999; font-style: italic;">No time set</span>`;
+        } else if (!note.date && note.time) {
+            const [hours, minutes] = note.time.split(':');
+            const hour = parseInt(hours, 10);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const formattedHour = hour % 12 || 12;
+            
+            dueDateContent = `<span class="noteDate" style="color: #999; font-style: italic;">No date set</span>`;
+            dueTimeContent = `<span class="noteTime">${formattedHour}:${minutes} ${ampm}</span>`;
+        } else {
+            dueDateContent = `<span class="noteDate" style="color: #999; font-style: italic;">No due date</span>`;
+            dueTimeContent = '';
+        }
 
+        if(note.modification === 'Completed') {
+            pageBox.style.backgroundColor = '#d4edda';
+        }
         page.innerHTML =`
             <div class ="noteHeader">
                 <span class="noteTitle">${note.title}</span>
@@ -210,14 +238,13 @@ const showWorkspace = (name=currentWorkspace) => {
             <textarea class="noteText">${note.text}</textarea>
             <div class="noteDue">
                 <span class="noteDueText">Due:</span>
-                <span class="noteDate">${note.date}</span>
-                <span class="noteTime">${formattedHour}:${minutes} ${ampm}</span>
+                ${dueDateContent}
+                ${dueTimeContent}
             </div>
         `;
         pageBox.appendChild(page);
         mainField.appendChild(pageBox);
-        pageBox.appendChild(page);
-        mainField.appendChild(pageBox);
+        
         page.addEventListener('click', (e) => {
             if(e.target.id === 'deleteIcon') {
                 const noteIndex = Array.from(mainField.children).indexOf(page.parentElement);
@@ -227,7 +254,7 @@ const showWorkspace = (name=currentWorkspace) => {
             } else if(e.target.id === 'tickIcon') {
                 const noteIndex = Array.from(mainField.children).indexOf(page.parentElement);
                 const note = workspaces.get(currentWorkspace)[noteIndex];
-                note.modification = 'Completed';
+                note.modification = note.modification === 'Completed' ? 'Created' : 'Completed';
                 saveWorkspaces(workspaces);
                 showWorkspace(currentWorkspace);
             }
@@ -236,7 +263,9 @@ const showWorkspace = (name=currentWorkspace) => {
                 const note = workspaces.get(currentWorkspace)[noteIndex];
                 document.getElementById('noteTitle').value = note.title;
                 document.getElementById('noteText').value = note.text;
-                document.getElementById('datetime').value = `${note.date}T${note.time}`;
+                document.getElementById('noteDate').value = note.date || '';
+                document.getElementById('noteTime').value = note.time || '';
+                
                 newNoteDialog.showModal();
                 workspaces.get(currentWorkspace).splice(noteIndex, 1);
                 saveWorkspaces(workspaces);
