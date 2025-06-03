@@ -245,6 +245,19 @@ const showWorkspace = (name=currentWorkspace) => {
         pageBox.appendChild(page);
         mainField.appendChild(pageBox);
         
+        const noteTextarea = page.querySelector('.noteText');
+        let saveTimeout;
+        
+        noteTextarea.addEventListener('input', () => {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                const noteIndex = Array.from(mainField.children).indexOf(pageBox);
+                const currentNote = workspaces.get(currentWorkspace)[noteIndex];
+                currentNote.text = noteTextarea.value;
+                saveWorkspaces(workspaces);
+            }, 500);
+        });
+        
         page.addEventListener('click', (e) => {
             if(e.target.id === 'deleteIcon') {
                 const noteIndex = Array.from(mainField.children).indexOf(page.parentElement);

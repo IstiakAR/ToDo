@@ -15,7 +15,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2"
   },
-  "homepage": "https://istiakar.github.io/Restaurant/",
+  "homepage": "https://istiakar.github.io/ToDo/",
   "scripts": {
     "build": "webpack --mode production",
     "predeploy": "npm run build",
