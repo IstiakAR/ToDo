@@ -1,0 +1,105 @@
+.pageBox {
+    width: 300px;
+    height: 300px;
+    background-color: #FFFFFF;
+    border-radius: 20px;
+    margin-left: 30px;
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 35px rgba(135, 206, 235, 0.3);
+    align-items: center;
+    padding: 24px;
+    gap: 16px;
+    transition: transform 0.2s ease;
+}
+
+.pageBox:hover {
+    transform: translateY(-4px);
+}
+
+.note {
+    width: 100%;
+    height: 100%;
+    padding: 16px 20px;
+    border-radius: 10px;
+    box-sizing: border-box;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    position: relative;
+    transition: background-color 0.3s ease;
+}
+
+.noteHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.noteHeaderIcons {
+    display: flex;
+    gap: 10px;
+}
+
+.noteHeaderIcons img{
+    width: 25px;
+    height: 28px;
+    cursor: pointer;
+}
+
+#editIcon:hover{
+    background-color: #4d94ff;
+    border-radius: 5px;
+}
+
+#tickIcon:hover{
+    background-color: #80ED99;
+    border-radius: 5px;
+}
+
+#deleteIcon:hover{
+    background-color: #ff4d4d;
+    border-radius: 5px;
+}
+
+.noteTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2d2d2d;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.noteText {
+    font-size: 1rem;
+    color: #444;
+    display: block;
+    margin-bottom: 10px;
+    line-height: 1.4;
+    background-color: transparent;
+    border-radius: 10px;
+    border: none;
+    resize: none;
+    overflow: auto;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+    height: 200px;
+    padding: 5px 10px;
+}
+.noteText:focus, .noteText:hover{
+    background-color: #f9f9f9;
+}
+
+.noteDue {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #777;
+    font-weight: 500;
+    margin-top: auto;
+}
+.noteDate {
+    margin-left: -25px;
+}
+
